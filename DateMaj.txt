@@ -1,0 +1,5 @@
+ Les données contenues dans le fichier texte SIMDUT.txt
+ ont été extraites de la base de données du Service du
+ répertoire toxicologique en date du 2013-03-14.
+
+ 3276 produits ont été extraits.
