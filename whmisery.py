@@ -1,9 +1,7 @@
 #!/usr/local/bin/python3
 
-# whmiscrunch.py
-# Ingests the SIMDUT.txt export of the WHMIS database, downloaded from
-# http://www.reptox.csst.qc.ca/Documents/SIMDUT/FichierTxt/Htm/FichierTxt.htm
-# and outputs a CSV file containing one chemical classification per row.
+# whmisery.py
+# See README.md for explanation.
 
 import csv
 
@@ -33,10 +31,12 @@ def main():
                'Classification': 'Classification'   # For the header row
                }
     infile = open('SIMDUT.txt', newline='', encoding='latin-1')
-    outfile = open('WHMIS_output.csv', 'w', newline='', encoding='utf-8')
     csvreader = csv.reader(infile, delimiter=';')
-    csvwriter = csv.writer(outfile, dialect='excel')
-    print('Processing SIMDUT.txt and writing WHMIS_output.csv.')
+    outfile_yes = open('WHMIS_output.csv', 'w', newline='', encoding='utf-8')
+    outfile_no = open('WHMIS_omitted.csv', 'w', newline='', encoding='utf-8')
+    writer_yes = csv.writer(outfile_yes, dialect='excel')
+    writer_no = csv.writer(outfile_no, dialect='excel')
+    print('Processing SIMDUT.txt and writing WHMIS_output.csv & WHMIS_omitted.csv.')
     # Fields in the CSV file:
     # 0: NomFrançais
     # 1: NomAnglais
@@ -44,12 +44,25 @@ def main():
     # 3: Classification
     # 4: PourcentageDeDivulgation [Minimum percentage for ingredient disclosure]
     # 5: Commentaire [Comments]
+    lastcasname = '@'
+    lastcasclass = '@'
     for row in csvreader:
-        # Separate the lists of classifications:
-        for c in row[3].split(','):
-            csvwriter.writerow(row[:3] + [classes[c.strip()]] + row[4:])
+        # Filter out solutions/mixtures/variants... 
+        # NOTE: This only works because the source list is sorted by name,
+        # and variants are given no CASRN, and they are called '<name>, x%'.
+        if row[2] == '' and lastcasname in row[1] and row[3] == lastcasclass:
+            writer_no.writerow(row)
+        else:
+            # Separate the lists of classifications:
+            for c in row[3].split(','):
+                writer_yes.writerow(row[:3] + [classes[c.strip()]] + row[4:])
+        # Remember...
+        if row[2] != '':
+            lastcasname = row[1]
+            lastcasclass = row[3]
     infile.close()
-    outfile.close()
+    outfile_yes.close()
+    outfile_no.close()
 
 if __name__ == '__main__':
     main()
