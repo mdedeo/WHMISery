@@ -32,11 +32,11 @@ def main():
                }
     infile = open('SIMDUT.txt', newline='', encoding='latin-1')
     csvreader = csv.reader(infile, delimiter=';')
-    outfile_yes = open('WHMIS_output.csv', 'w', newline='', encoding='utf-8')
-    outfile_no = open('WHMIS_omitted.csv', 'w', newline='', encoding='utf-8')
+    outfile_yes = open('output/WHMIS_output.csv', 'w', newline='', encoding='utf-8')
+    outfile_no = open('output/WHMIS_omitted.csv', 'w', newline='', encoding='utf-8')
     writer_yes = csv.writer(outfile_yes, dialect='excel')
     writer_no = csv.writer(outfile_no, dialect='excel')
-    print('Processing SIMDUT.txt and writing WHMIS_output.csv & WHMIS_omitted.csv.')
+    print('Processing SIMDUT.txt and writing output files.')
     # Fields in the CSV file:
     # 0: NomFrançais
     # 1: NomAnglais
@@ -48,9 +48,9 @@ def main():
     lastcasclass = '@'
     for row in csvreader:
         # Filter out solutions/mixtures/variants... 
-        # NOTE: This only works because the source list is sorted by name,
+        # NOTE: This only works because the source list is sorted by name (fr),
         # and variants are given no CASRN, and they are called '<name>, x%'.
-        if row[2] == '' and lastcasname in row[1] and row[3] == lastcasclass:
+        if row[2] == '' and lastcasname in row[0] and row[3] == lastcasclass:
             writer_no.writerow(row)
         else:
             # Separate the lists of classifications:
@@ -58,7 +58,7 @@ def main():
                 writer_yes.writerow(row[:3] + [classes[c.strip()]] + row[4:])
         # Remember...
         if row[2] != '':
-            lastcasname = row[1]
+            lastcasname = row[0]
             lastcasclass = row[3]
     infile.close()
     outfile_yes.close()
