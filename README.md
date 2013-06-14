@@ -5,7 +5,7 @@ Process WHMIS chemical classification data from the [Service du répertoire toxi
 
 Here is a Python script which transforms the data as follows:
 * Each different classification for each chemical is listed in a separate row in the main output file, `WHMIS_output.csv`.
-* Solutions, mixtures, or variants of a pure substance that have the same overall classification as the pure substance are dumped in an 'omit' list, `WHMIS_omitted.csv`.
+* Solutions, hydrates, or variants of a pure substance that have the same overall classification as the pure substance are dumped in an 'omit' list, `WHMIS_omitted.csv`.
 * Alphanumeric WHMIS classification codes are replaced with with full English titles.
 
 
